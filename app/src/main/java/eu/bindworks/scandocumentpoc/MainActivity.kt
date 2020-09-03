@@ -3,19 +3,20 @@ package eu.bindworks.scandocumentpoc
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.labters.documentscanner.ImageCropActivity
 import com.labters.documentscanner.helpers.ScannerConstants
 import java.io.File
 import java.io.IOException
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 	val REQUEST_IMAGE_CAPTURE = 1
@@ -38,10 +39,27 @@ class MainActivity : AppCompatActivity() {
 			ScannerConstants.cropText = "Pokračovat"
 			ScannerConstants.cropColor = "#E2001A"
 			ScannerConstants.progressColor = "#E2001A"
-			BitmapFactory.decodeFile(currentPhotoPath)?.also { bitmap ->
-				ScannerConstants.selectedImageBitmap=bitmap
-				startActivityForResult(Intent(MainActivity@this, ImageCropActivity::class.java), REQUEST_CROP)
-			}
+//			if(currentPhotoPath != null){
+				BitmapFactory.decodeFile(currentPhotoPath)?.also { bitmap ->
+//					val matrix = Matrix()
+//					matrix.postRotate(90f)
+//					val rotated =  Bitmap.createBitmap(
+//						bitmap,
+//						0,
+//						0,
+//						bitmap.getWidth(),
+//						bitmap.getHeight(),
+//						matrix,
+//						true
+//					)
+					val rotated = bitmap
+					ScannerConstants.selectedImageBitmap=rotated
+					startActivityForResult(
+						Intent(MainActivity@ this, CropActivity::class.java),
+						REQUEST_CROP
+					)
+				}
+//			}
 		}
 		if (requestCode==REQUEST_CROP && resultCode== RESULT_OK )
 		{
@@ -49,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 				findViewById<ImageView>(R.id.picture).setImageBitmap(ScannerConstants.selectedImageBitmap)
 			}
 		}
-		super.onActivityResult(requestCode,resultCode,data);
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private fun dispatchTakePictureIntent() {
